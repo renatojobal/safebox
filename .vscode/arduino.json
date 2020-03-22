@@ -2,6 +2,6 @@
     "sketch": "safebox.ino",
     "board": "arduino:avr:nano",
     "configuration": "cpu=atmega328old",
-    "programmer": "ArduinoISP",
+    "programmer": "AVR ISP",
     "port": "/dev/ttyUSB0"
 }
