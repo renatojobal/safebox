@@ -58,14 +58,11 @@ Cards
 
 */
 
-// byte Usuario1[4] = {0x90, 0x0E, 0xE4, 0xA4}; // UID de tarjeta leido en programa 1
-// byte Usuario2[4] = {0x06, 0x76, 0x25, 0xD9}; // UID de llavero leido en programa 1
+String targetUID; // for saving the result of the reader
 
-byte targetUID[4]; // for saving the result of the reader
-
-byte allowedUIDs[2][4] = {
-    {0x09, 0x7E, 0xD7, 0x20},
-    {0x42, 0x37, 0xF4, 0x1F}};
+String allowedUIDs[2] = {
+    "097ED720",
+    "4237F41F"};
 
 /*
 
@@ -118,14 +115,14 @@ void loop()
   { // bucle recorre de a un byte por vez el UID
     if (mfrc522.uid.uidByte[i] < 0x10)
     {
-      Serial.print(" 0");
-    }
-    else
-    {
+      Serial.print("0");
+      targetUID += "0";
+    }else{
       Serial.print(" ");
     }
+    
     Serial.print(mfrc522.uid.uidByte[i], HEX); // imprime el byte del UID leido en hexadecimal
-    targetUID[i] = mfrc522.uid.uidByte[i];     // almacena en array el byte del UID leido
+    targetUID += mfrc522.uid.uidByte[i];     // almacena en string el byte del UID leido
   }
   Serial.print("\t"); //
 
@@ -138,11 +135,11 @@ void loop()
   // Comparing the targetUID with the allowedUIDs
   if (isAnAlloweUID())
   {
-    Serial.print("Alloew UID");
+    Serial.println("\nAlloew UID");
   }
   else
   {
-    Serial.print("UID not allowed");
+    Serial.println("\nUID not allowed");
   }
 
   mfrc522.PICC_HaltA(); // stop the comunication
@@ -177,14 +174,10 @@ boolean isAnAlloweUID()
 
 
 */
-boolean areSameUIDs(byte array1[], byte array2[]) // funcion compareUIDs
+boolean areSameUIDs(String target1, String target2) // funcion compareUIDs
 {
-  for (byte i = 0; i < sizeof(array1); i++)
-  {
-    if (array1[i] != array2[i])
-      return (false);
-  }
-  return (true);
+  if (target1 == target2){
+  return (true);}
 }
 
 /*
@@ -208,4 +201,31 @@ boolean canRead()
     return false;
   }
   return true;
+}
+
+
+/*
+
+
+
+*/
+String read(){
+  // Getting the read and saving it on targetUID, and printing it
+
+  String result = "";
+
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  { 
+    if (mfrc522.uid.uidByte[i] < 0x10)
+    {
+      Serial.print("0");
+      result += "0";
+    }else{
+      Serial.print(" ");
+    }
+    
+    result += mfrc522.uid.uidByte[i];    
+  }
+  return result;
+
 }
