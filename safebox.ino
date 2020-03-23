@@ -58,18 +58,15 @@ Cards
 
 */
 
-String targetUID; // for saving the result of the reader
+// byte Usuario1[4] = {0x90, 0x0E, 0xE4, 0xA4}; // UID de tarjeta leido en programa 1
+// byte Usuario2[4] = {0x06, 0x76, 0x25, 0xD9}; // UID de llavero leido en programa 1
 
-String allowedUIDs[2] = {
-    "097ED720",
-    "4237F41F"};
+byte targetUID[4]; // for saving the result of the reader
 
-/*
+byte allowedUIDs[2][4] = {
+    {0x09, 0x7E, 0xD7, 0x20},
+    {0x42, 0x37, 0xF4, 0x1F}};
 
-
-
-
-*/
 void setup()
 {
   Serial.begin(9600);        // Initialice the serial port
@@ -78,67 +75,50 @@ void setup()
   Serial.println("Ready\n"); // Ok message
 }
 
-/*
-
-
-
-
-*/
 void loop()
 {
 
-  /*
-
-
-
-
-  */
   // Control sentences
   if (canRead())
   { // if its possible read a UID
-    Serial.print("UID Found\n");
+    Serial.print("\nUID Found\n");
   }
   else
   {
     return;
   }
 
-  /*
-
-
-
-
-  */
   // Getting the read and saving it on targetUID, and printing it
-  targetUID = read();
-  Serial.print("UID: " + targetUID);
-  Serial.println(targetUID);
+  Serial.print("UID:");
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  { // bucle recorre de a un byte por vez el UID
+    if (mfrc522.uid.uidByte[i] < 0x10)
+    {
+      Serial.print(" 0");
+    }
+    else
+    {
+      Serial.print(" ");
+    }
+    Serial.print(mfrc522.uid.uidByte[i], HEX); // imprime el byte del UID leido en hexadecimal
+    targetUID[i] = mfrc522.uid.uidByte[i];     // almacena en array el byte del UID leido
+  }
+  Serial.print("\t"); //
 
-  /*
-
-
-
-
-  */
   // Comparing the targetUID with the allowedUIDs
   if (isAnAlloweUID())
   {
-    Serial.println("\nAllowed UID");
+    Serial.print("\nAllowed UID\n");
+    /* ToDo something if it is allowed ... */
   }
   else
   {
-    Serial.println("\nUID not allowed");
+    Serial.print("\nUID not allowed\n");
   }
 
   mfrc522.PICC_HaltA(); // stop the comunication
 }
 
-/*
-
-
-
-
-*/
 boolean isAnAlloweUID()
 { // Comparing the targetUID wit the allowedUIDs
 
@@ -147,34 +127,24 @@ boolean isAnAlloweUID()
 
   for (byte i = 0; i < sizeof(allowedUIDs); i++)
   {
-    if (areSameUIDs(targetUID, allowedUIDs[i]))
-    {
+    /*Compare each UID allowed*/
+    if(areSameUIDS(targetUID, allowedUIDs[i])){
       return true;
     }
   }
-
-  return false;
+  return (false);
 }
 
-/*
-
-
-
-
-*/
-boolean areSameUIDs(String target1, String target2) // funcion compareUIDs
+boolean areSameUIDS(byte target1[], byte target2[])
 {
-  if (target1 == target2){
-  return (true);}
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  {
+    if (target1[i] != target2[i])
+      return (false);
+  }
+  return (true);
 }
 
-/*
-
-
-
-
-
-*/
 boolean canRead()
 {
 
@@ -189,31 +159,4 @@ boolean canRead()
     return false;
   }
   return true;
-}
-
-
-/*
-
-
-
-*/
-String read(){
-  // Getting the read and saving it on targetUID, and printing it
-
-  String result = "";
-
-  for (byte i = 0; i < mfrc522.uid.size; i++)
-  { 
-    if (mfrc522.uid.uidByte[i] < 0x10)
-    {
-      Serial.print("0");
-      result += "0";
-    }else{
-      Serial.print(" ");
-    }
-    sprintf
-    result += "%x", mfrc522.uid.uidByte[i];    
-  }
-  return result;
-
 }
