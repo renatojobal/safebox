@@ -67,6 +67,12 @@ byte allowedUIDs[2][4] = {
     {0x09, 0x7E, 0xD7, 0x20},
     {0x42, 0x37, 0xF4, 0x1F}};
 
+/*
+
+
+
+
+*/
 void setup()
 {
   Serial.begin(9600);        // Initialice the serial port
@@ -75,9 +81,21 @@ void setup()
   Serial.println("Ready\n"); // Ok message
 }
 
+/*
+
+
+
+
+*/
 void loop()
 {
 
+  /*
+
+
+
+
+  */
   // Control sentences
   if (canRead())
   { // if its possible read a UID
@@ -88,6 +106,12 @@ void loop()
     return;
   }
 
+  /*
+
+
+
+
+  */
   // Getting the read and saving it on targetUID, and printing it
   Serial.print("UID:");
   for (byte i = 0; i < mfrc522.uid.size; i++)
@@ -105,6 +129,12 @@ void loop()
   }
   Serial.print("\t"); //
 
+  /*
+
+
+
+
+  */
   // Comparing the targetUID with the allowedUIDs
   if (isAnAlloweUID())
   {
@@ -118,36 +148,52 @@ void loop()
   mfrc522.PICC_HaltA(); // stop the comunication
 }
 
+/*
 
 
+
+
+*/
 boolean isAnAlloweUID()
 { // Comparing the targetUID wit the allowedUIDs
 
-  // Comparing each UID allowedUID, so we need two fors, because it is 
+  // Comparing each UID allowedUID, so we need two fors, because it is
   // a matriz
 
-  for (byte i = 0; i < allowedUIDs.length(); i++){
-
-
-    
+  for (byte i = 0; i < sizeof(allowedUIDs); i++)
+  {
+    if (areSameUIDs(targetUID, allowedUIDs[i]))
+    {
+      return true;
+    }
   }
 
-  for (byte j = 0; i < mfrc522.uid.size; j++)
-  {                             
-
-
-
-    if (targetUID[j] != usuario[j]) 
-      return (false);  
-
-
-
-  }
-  return (true); 
+  return false;
 }
 
+/*
 
 
+
+
+*/
+boolean areSameUIDs(byte array1[], byte array2[]) // funcion compareUIDs
+{
+  for (byte i = 0; i < sizeof(array1); i++)
+  {
+    if (array1[i] != array2[i])
+      return (false);
+  }
+  return (true);
+}
+
+/*
+
+
+
+
+
+*/
 boolean canRead()
 {
 
