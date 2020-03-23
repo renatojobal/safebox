@@ -67,11 +67,16 @@ byte allowedUIDs[2][4] = {
     {0x09, 0x7E, 0xD7, 0x20},
     {0x42, 0x37, 0xF4, 0x1F}};
 
+int ledPin = 8;
+
 void setup()
 {
-  Serial.begin(9600);        // Initialice the serial port
-  SPI.begin();               // initialice bus SPI
-  mfrc522.PCD_Init();        // initialice reder module
+  Serial.begin(9600); // Initialice the serial port
+  SPI.begin();        // initialice bus SPI
+  mfrc522.PCD_Init(); // initialice reder module
+
+  pinMode(ledPin, OUTPUT);
+
   Serial.println("Ready\n"); // Ok message
 }
 
@@ -110,6 +115,7 @@ void loop()
   {
     Serial.print("\nAllowed UID\n");
     /* ToDo something if it is allowed ... */
+    handleCorrectUID();
   }
   else
   {
@@ -128,7 +134,8 @@ boolean isAnAlloweUID()
   for (byte i = 0; i < sizeof(allowedUIDs); i++)
   {
     /*Compare each UID allowed*/
-    if(areSameUIDS(targetUID, allowedUIDs[i])){
+    if (areSameUIDS(targetUID, allowedUIDs[i]))
+    {
       return true;
     }
   }
@@ -159,4 +166,21 @@ boolean canRead()
     return false;
   }
   return true;
+}
+
+/*
+handleCorrectUID
+
+The digital pins allowed are: 8, 7, 6, 5, 4, 3, 2
+The analog  pins allowed are: 1, 2, 3, 4, 5, 6, 7
+
+
+
+*/
+
+void handleCorrectUID()
+{
+  digitalWrite(ledPin, HIGH);
+  delay(1000);
+  digitalWrite(ledPin, LOW);
 }
