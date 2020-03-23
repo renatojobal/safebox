@@ -120,6 +120,7 @@ void loop()
   else
   {
     Serial.print("\nUID not allowed\n");
+    handleIncorrectUID();
   }
 
   mfrc522.PICC_HaltA(); // stop the comunication
@@ -183,4 +184,13 @@ void handleCorrectUID()
   digitalWrite(ledPin, HIGH);
   delay(1000);
   digitalWrite(ledPin, LOW);
+}
+
+/*
+handleinCorrectUID
+
+
+*/
+void handleIncorrectUID()
+{
 }
