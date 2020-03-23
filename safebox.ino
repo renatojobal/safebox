@@ -110,21 +110,9 @@ void loop()
 
   */
   // Getting the read and saving it on targetUID, and printing it
-  Serial.print("UID:");
-  for (byte i = 0; i < mfrc522.uid.size; i++)
-  { // bucle recorre de a un byte por vez el UID
-    if (mfrc522.uid.uidByte[i] < 0x10)
-    {
-      Serial.print("0");
-      targetUID += "0";
-    }else{
-      Serial.print(" ");
-    }
-    
-    Serial.print(mfrc522.uid.uidByte[i], HEX); // imprime el byte del UID leido en hexadecimal
-    targetUID += mfrc522.uid.uidByte[i];     // almacena en string el byte del UID leido
-  }
-  Serial.print("\t"); //
+  targetUID = read();
+  Serial.print("UID: " + targetUID);
+  Serial.println(targetUID);
 
   /*
 
@@ -135,7 +123,7 @@ void loop()
   // Comparing the targetUID with the allowedUIDs
   if (isAnAlloweUID())
   {
-    Serial.println("\nAlloew UID");
+    Serial.println("\nAllowed UID");
   }
   else
   {
@@ -223,8 +211,8 @@ String read(){
     }else{
       Serial.print(" ");
     }
-    
-    result += mfrc522.uid.uidByte[i];    
+    sprintf
+    result += "%x", mfrc522.uid.uidByte[i];    
   }
   return result;
 
