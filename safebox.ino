@@ -39,6 +39,7 @@
 
 #include <SPI.h>     // Include library bus SPI
 #include <MFRC522.h> // Include library for MFRC522
+#include <Servo.h>   // Include library for servomotor
 
 #define RST_PIN 9 // Constant of reset pin
 #define SS_PIN 10 // Constant of slave select pin
@@ -67,7 +68,13 @@ byte allowedUIDs[2][4] = {
     {0x09, 0x7E, 0xD7, 0x20},
     {0x42, 0x37, 0xF4, 0x1F}};
 
-int ledPin = 8;
+int greenLedPin = 8;
+int redLedPin = 3;
+Servo servomotor;
+int servoPin = 7;
+int minPulse = 700;
+int maxPulse = 2300;
+int buttonPin = 2;
 
 void setup()
 {
@@ -75,13 +82,23 @@ void setup()
   SPI.begin();        // initialice bus SPI
   mfrc522.PCD_Init(); // initialice reder module
 
-  pinMode(ledPin, OUTPUT);
-
+  pinMode(greenLedPin, OUTPUT);
+  pinMode(redLedPin, OUTPUT);
+  pinMode(greenLedPin, INPUT);
+  servomotor.attach(servoPin);
+  closeDoor();
   Serial.println("Ready\n"); // Ok message
 }
 
 void loop()
 {
+  delay(200);
+
+  if (buttonPressed())
+  {
+
+    closeDoor();
+  }
 
   // Control sentences
   if (canRead())
@@ -181,9 +198,10 @@ The analog  pins allowed are: 1, 2, 3, 4, 5, 6, 7
 
 void handleCorrectUID()
 {
-  digitalWrite(ledPin, HIGH);
-  delay(1000);
-  digitalWrite(ledPin, LOW);
+  digitalWrite(greenLedPin, HIGH);
+  openDoor();
+  delay(2000);
+  digitalWrite(greenLedPin, LOW);
 }
 
 /*
@@ -193,4 +211,26 @@ handleinCorrectUID
 */
 void handleIncorrectUID()
 {
+  digitalWrite(redLedPin, HIGH);
+  delay(2000);
+  digitalWrite(redLedPin, LOW);
+}
+
+void openDoor()
+{
+  servomotor.write(180);
+  delay(200);
+}
+void closeDoor()
+{
+  servomotor.write(0);
+  digitalWrite(redLedPin, HIGH);
+  delay(2000);
+  digitalWrite(redLedPin, LOW);
+}
+
+boolean buttonPressed()
+{
+  Serial.print(digitalRead(buttonPin));
+  return digitalRead(buttonPin);
 }
