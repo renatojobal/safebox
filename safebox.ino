@@ -257,6 +257,6 @@ void closeDoor()
 */
 boolean buttonPressed()
 {
-  Serial.print(digitalRead(buttonPin));
+  // Serial.print(digitalRead(buttonPin));
   return digitalRead(buttonPin);
 }
